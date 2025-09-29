@@ -40,6 +40,7 @@ function btnFiltres(categoryData){
       const filteredWorks = works.filter(work => work.categoryId === category.id);
       showWork(filteredWorks);
   allButton.addEventListener("click", () => filterWorks("all"));
+  
       
     });
     button.setAttribute("data-category", category.id);
