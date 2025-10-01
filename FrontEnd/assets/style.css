@@ -220,7 +220,6 @@ li:hover {
   justify-content: center;
   gap: 10px;
   margin-bottom: 50px;
-  flex-wrap: wrap;
 }
 
 .filters button {
