@@ -54,3 +54,32 @@ function btnFiltres(categoryData) {
     filters.appendChild(button);
   });
 }
+
+//formulaire
+
+const login = document.querySelector('#login');
+
+login.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const email = document.querySelector('#email').value;
+    const password = document.querySelector('#password').value;
+
+    const response = await fetch('http://localhost:5678/api/users/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, password: password })
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        // Stocker le token dans le localStorage
+        localStorage.setItem('token', data.token);
+        // Rediriger vers la page d'accueil
+        window.location.href = 'index.html';
+    } else {
+        alert('Erreur de connexion. Vérifiez vos identifiants.');
+    }
+});
