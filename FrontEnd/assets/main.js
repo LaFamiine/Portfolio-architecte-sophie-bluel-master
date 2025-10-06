@@ -69,6 +69,12 @@ login.addEventListener("submit", function (event) {
     alert("Identifiants ou mot de passe incorrects.");
   }
 
-  
-  login.reset();
+   localStorage.setItem("token", data.token);
+   localStorage.setItem("userId", data.userId);
+    window.location.href = "index.html";
+    
+    login.reset();
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    filters.appendChild(button);
 });
