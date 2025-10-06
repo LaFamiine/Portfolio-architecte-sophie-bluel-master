@@ -30,7 +30,6 @@ function showWork(workData) {
 
 function btnFiltres(categoryData) {
   const filters = document.querySelector(".filters");
-  filters.innerHTML = "";
 // Créer le bouton "Tous"
   const allButton = document.createElement("button");
   allButton.textContent = "Tous";
@@ -57,29 +56,19 @@ function btnFiltres(categoryData) {
 
 //formulaire
 
-const login = document.querySelector('#login');
+const login = document.querySelector("#login form");
 
-login.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    const email = document.querySelector('#email').value;
-    const password = document.querySelector('#password').value;
+login.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const email = document.querySelector("#email").value;
+  const password = document.querySelector("#password").value;
 
-    const response = await fetch('http://localhost:5678/api/users/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: email, password: password })
-    });
+  if (email === "sophie.bluel@test.tld" && password === "S0phie") {
+    alert("Connexion réussie !");
+  } else {
+    alert("Identifiants ou mot de passe incorrects.");
+  }
 
-    if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        // Stocker le token dans le localStorage
-        localStorage.setItem('token', data.token);
-        // Rediriger vers la page d'accueil
-        window.location.href = 'index.html';
-    } else {
-        alert('Erreur de connexion. Vérifiez vos identifiants.');
-    }
+  
+  login.reset();
 });
