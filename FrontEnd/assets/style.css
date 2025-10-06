@@ -296,6 +296,13 @@ li:hover {
   flex-direction: column;
 }
 
+.password {
+    text-align: center;
+    color: black;
+    text-decoration: underline;
+}
+
+
 #login input {
   height: 50px;
   font-size: 1.2em;
