@@ -53,31 +53,3 @@ function btnFiltres(categoryData) {
     filters.appendChild(button);
   });
 }
-
-//formulaire
-
-const login = document.querySelector("#login form");
-
-login.addEventListener("submit", function (event) {
-  event.preventDefault();
-  const email = document.querySelector("#email").value;
-  const password = document.querySelector("#password").value; 
-
-    if (email === "sophie.bluel@test.tld" && password === "S0phie") {
-      alert("Connexion réussie");
-    } else {
-      alert("Erreur dans l'identifiant ou le mot de passe");
-      return;
-    }
-
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.userId);
-      window.location.href = "./index.html";
-  
-
-    login.reset();
-    figure.appendChild(img);
-    figure.appendChild(figcaption);
-    filters.appendChild(button);
-});

@@ -31,10 +31,11 @@ crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<h2>Log in</h2>
 		<form action="#" method="post">
 			<label for="email">Email</label>
-			<input type="email" name="email" id="email">
+			<input type="email" name="email" id="email" required>
 			<label for="password">Mot de passe</label>
-			<input type="password" name="password" id="password">
-			<input type="submit" value="Se connecter">
+			<input type="password" name="password" id="password" required>
+			<div class="error"></div>
+			<input type="submit" id="submit" value="Se connecter">
 			<a href="#" class="password">Mot de passe oublié</a>
 		</form>
 	</section>
@@ -47,7 +48,6 @@ crossorigin="anonymous" referrerpolicy="no-referrer" />
 		</ul>
 	</nav>
 </footer>
-<script src="assets/api.js"></script>
-<script src="assets/main.js"></script>
+<script src="assets/login.js"></script>
 </body>
 </html>
