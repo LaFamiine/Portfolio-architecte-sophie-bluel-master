@@ -53,3 +53,137 @@ function btnFiltres(categoryData) {
     filters.appendChild(button);
   });
 }
+
+// Attendre que le DOM soit chargé
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("✅ Modale initialisation...");
+    
+    // Sélection des éléments
+    const editProjectsBtn = document.getElementById('editProjectsBtn');
+    const galleryModal = document.getElementById('galleryModal');
+    const closeModal = document.querySelector('.close-modal');
+    const addPhotoBtn = document.getElementById('addPhotoBtn');
+    const modalGallery = document.getElementById('modalGallery');
+
+    // Vérification
+    if (!editProjectsBtn) console.error("Bouton modifier non trouvé");
+    if (!galleryModal) console.error("Modale non trouvée");
+
+    // Fonction pour ouvrir la modale
+    function openModal() {
+        console.log("Ouverture modale...");
+        galleryModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        loadGalleryImages();
+    }
+
+    // Fonction pour fermer la modale
+    function closeGalleryModal() {
+        galleryModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Charger les images depuis l'API
+    async function loadGalleryImages() {
+        try {
+            console.log("📡 Chargement des images API...");
+            const response = await fetch('http://localhost:5678/api/works');
+            
+            if (!response.ok) throw new Error('API non disponible');
+            
+            const works = await response.json();
+            console.log("Images chargées:", works.length);
+            
+            modalGallery.innerHTML = '';
+            
+            works.forEach(work => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.innerHTML = `
+                    <img src="${work.imageUrl}" alt="${work.title}">
+                    <div class="delete-icon" data-id="${work.id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                `;
+                modalGallery.appendChild(galleryItem);
+            });
+            
+        } catch (error) {
+            console.error('❌ Erreur chargement:', error);
+            modalGallery.innerHTML = `
+                <div style="grid-column: 1 / -1; color: red; padding: 20px;">
+                    Erreur de chargement: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // Supprimer une image
+    async function deleteWork(workId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Vous devez être connecté');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                loadGalleryImages(); // Recharger
+            } else {
+                alert('Erreur suppression');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur suppression');
+        }
+    }
+
+    // ÉVÉNEMENTS
+    if (editProjectsBtn) {
+        editProjectsBtn.addEventListener('click', openModal);
+        console.log("Event listener ajouté au bouton modifier");
+    }
+
+    if (closeModal) {
+        closeModal.addEventListener('click', closeGalleryModal);
+    }
+
+    if (addPhotoBtn) {
+        addPhotoBtn.addEventListener('click', function() {
+            console.log(" Bouton ajouter photo cliqué");
+            // Ici vous pourrez ajouter la 2ème modale plus tard
+        });
+    }
+
+    // Fermer en cliquant en dehors
+    galleryModal.addEventListener('click', function(event) {
+        if (event.target === galleryModal) {
+            closeGalleryModal();
+        }
+    });
+
+    // Fermer avec Échap
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && galleryModal.style.display === 'block') {
+            closeGalleryModal();
+        }
+    });
+
+    // Gérer la suppression
+    modalGallery.addEventListener('click', function(event) {
+        const deleteBtn = event.target.closest('.delete-icon');
+        if (deleteBtn) {
+            const workId = deleteBtn.getAttribute('data-id');
+            if (confirm('Supprimer cette image ?')) {
+                deleteWork(workId);
+            }
+        }
+    });
+
+    console.log("Modale prête! Cliquez sur 'modifier'");
+});

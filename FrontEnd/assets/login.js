@@ -27,7 +27,4 @@ login.addEventListener("click", function (event) {
             })
         }
     })
-    //localStorage.setItem("token", data.token);
-    //localStorage.setItem("userId", data.userId);
-    //window.location.href = "./index.html";
 });

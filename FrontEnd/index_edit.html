@@ -40,38 +40,28 @@ crossorigin="anonymous" referrerpolicy="no-referrer" />
 	</section>
 	<section id="portfolio">
 		<h2>Mes Projets <button id="editProjectsBtn" class="edit-btn">
-      <i class="fa-solid fa-pen-to-square"></i>
-      modifier
-    </button></h2>
-		 
-		<div class="gallery">
-			</div>
-            <!-- Bouton pour ouvrir la modale -->
-<button id="openModalBtn" class="btn-primary">Modifier</button>
+    <i class="fas fa-edit"></i>
+    modifier
+</button></h2>
+		<div class="gallery"></div>
+	<!-- Gardez votre bouton Modifier existant -->
 
-<!-- La modale -->
+
+<!-- Modale réelle -->
 <div id="galleryModal" class="modal">
-  <div class="modal-content">
-    <!-- Header avec titre et croix -->
-    <div class="modal-header">
-      <span class="modal-title">Galerie photo</span>
-      <span class="close-modal">&times;</span>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Galerie photo</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="gallery-grid" id="modalGallery">
+                <!-- Les images de l'API viendront ici -->
+            </div>
+            <div class="modal-separator"></div>
+            <button id="addPhotoBtn" class="btn-add-photo">Ajouter une photo</button>
+        </div>
     </div>
-    
-    <!-- Contenu de la modale -->
-    <div class="modal-body">
-      <!-- Galerie d'images -->
-      <div class="gallery-grid" id="modalGallery">
-        <!-- Les images seront ajoutées ici par JavaScript -->
-      </div>
-      
-      <!-- Séparateur -->
-      <div class="modal-separator"></div>
-      
-      <!-- Bouton Ajouter une photo -->
-      <button id="addPhotoBtn" class="btn-secondary">Ajouter une photo</button>
-    </div>
-  </div>
 </div>
                 
 	</section>
