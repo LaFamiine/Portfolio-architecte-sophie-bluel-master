@@ -56,7 +56,7 @@ function btnFiltres(categoryData) {
 
 // Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("✅ Modale initialisation...");
+    console.log("Modale initialisation...");
     
     // Sélection des éléments
     const editProjectsBtn = document.getElementById('editProjectsBtn');
@@ -65,13 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPhotoBtn = document.getElementById('addPhotoBtn');
     const modalGallery = document.getElementById('modalGallery');
 
-    // Vérification
-    if (!editProjectsBtn) console.error("Bouton modifier non trouvé");
-    if (!galleryModal) console.error("Modale non trouvée");
-
     // Fonction pour ouvrir la modale
     function openModal() {
-        console.log("Ouverture modale...");
         galleryModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         loadGalleryImages();
@@ -86,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Charger les images depuis l'API
     async function loadGalleryImages() {
         try {
-            console.log("📡 Chargement des images API...");
+            console.log("Chargement des images API...");
             const response = await fetch('http://localhost:5678/api/works');
             
             if (!response.ok) throw new Error('API non disponible');
@@ -109,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
         } catch (error) {
-            console.error('❌ Erreur chargement:', error);
+            console.error('Erreur chargement:', error);
             modalGallery.innerHTML = `
                 <div style="grid-column: 1 / -1; color: red; padding: 20px;">
                     Erreur de chargement: ${error.message}
@@ -117,31 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
     }
-
-    // Supprimer une image
-    async function deleteWork(workId) {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Vous devez être connecté');
-            return;
-        }
-        
-        try {
-            const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (response.ok) {
-                loadGalleryImages(); // Recharger
-            } else {
-                alert('Erreur suppression');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Erreur suppression');
-        }
-    }
+    
 
     // ÉVÉNEMENTS
     if (editProjectsBtn) {
@@ -166,24 +137,4 @@ document.addEventListener('DOMContentLoaded', function() {
             closeGalleryModal();
         }
     });
-
-    // Fermer avec Échap
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && galleryModal.style.display === 'block') {
-            closeGalleryModal();
-        }
-    });
-
-    // Gérer la suppression
-    modalGallery.addEventListener('click', function(event) {
-        const deleteBtn = event.target.closest('.delete-icon');
-        if (deleteBtn) {
-            const workId = deleteBtn.getAttribute('data-id');
-            if (confirm('Supprimer cette image ?')) {
-                deleteWork(workId);
-            }
-        }
-    });
-
-    console.log("Modale prête! Cliquez sur 'modifier'");
 });

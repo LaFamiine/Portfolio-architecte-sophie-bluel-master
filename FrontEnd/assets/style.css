@@ -326,16 +326,6 @@ input[type="submit"] {
 
 /*modal
 /* Style de la modale */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-}
 
 .modal-content {
   background-color: #fff;
@@ -373,9 +363,6 @@ input[type="submit"] {
   justify-content: center;
 }
 
-
-/* Corps de la modale */
-/* Style de la modale */
 .modal {
   display: none;
   position: fixed;
@@ -385,7 +372,6 @@ input[type="submit"] {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
 }
 
 .modal-content {
@@ -413,20 +399,17 @@ input[type="submit"] {
 /* Header de la modale */
 .modal-header {
     display: flex;
-    justify-content: space-between; 
     padding: 30px;
-    border-bottom: 1px solid #B3B3B3;
-    position: relative; 
 }
 
 .modal-title {
     font-size: 26px;
     font-weight: 400;
     font-family: 'Work Sans', sans-serif;
-    margin: 0;
     color: #000;
-    position: absolute; /* Position absolue pour le centrage */
-    left: 50%; /* Centre horizontalement */
+    position: absolute; 
+    left: 50%; 
+    top: 10%;
     transform: translateX(-50%); /* Ajuste le centrage */
 }
 
@@ -434,17 +417,6 @@ input[type="submit"] {
     font-size: 32px;
     cursor: pointer;
   margin-left: auto;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
@@ -476,16 +448,12 @@ input[type="submit"] {
 
 .gallery-item {
     position: relative;
-    aspect-ratio: 1;
-    border-radius: 5px;
-    overflow: hidden;
 }
 
 .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 3px;
 }
 
 .delete-icon {
@@ -494,13 +462,13 @@ input[type="submit"] {
     right: 6px;
     background: #000;
     color: white;
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 9px;
+    font-size: 11px;
 }
 
 .modal-separator {
