@@ -23,7 +23,7 @@ login.addEventListener("click", function (event) {
         } else {
             response.json().then(function(data){
                 localStorage.setItem("token", data.token);
-                window.location.href = "index_edit.html";
+                window.location.href = "index.html";
             })
         }
     })

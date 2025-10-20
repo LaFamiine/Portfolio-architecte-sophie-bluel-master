@@ -1,58 +1,102 @@
 // Fonction pour afficher les travaux
 
 function showWork(workData) {
-  // Récupérer la classe gallery
-  const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = "";
+    // Récupérer la classe gallery
+    const gallery = document.querySelector(".gallery");
+    gallery.innerHTML = "";
 
-  // Créer une boucle qui va permettre de renseigner les informations pour créer les balises nécessaires aux travaux
-  // Créer une balise figure et lui attribuer un id
-  workData.forEach((element) => {
-    const figure = document.createElement("figure");
-    figure.setAttribute("id", element.id);
-    // Créer une balise img et lui attribuer sa source et son attribut ALT
-    const img = document.createElement("img");
-    img.setAttribute("src", element.imageUrl);
-    img.setAttribute("alt", element.title);
-    // Créer une balise figcaption et lui attribuer son titre
-    const figcaption = document.createElement("figcaption");
-    figcaption.textContent = element.title;
-    // Intégrer la figure dans l'élément parent "gallery"
-    gallery.appendChild(figure);
-    // Intégrer l'image et le figcaption dans l'élément parent "figure"
-    figure.appendChild(img);
-    figure.appendChild(figcaption);
-  });
+    // Créer une boucle qui va permettre de renseigner les informations pour créer les balises nécessaires aux travaux
+    // Créer une balise figure et lui attribuer un id
+    workData.forEach((element) => {
+        const figure = document.createElement("figure");
+        figure.setAttribute("id", element.id);
+        // Créer une balise img et lui attribuer sa source et son attribut ALT
+        const img = document.createElement("img");
+        img.setAttribute("src", element.imageUrl);
+        img.setAttribute("alt", element.title);
+        // Créer une balise figcaption et lui attribuer son titre
+        const figcaption = document.createElement("figcaption");
+        figcaption.textContent = element.title;
+        // Intégrer la figure dans l'élément parent "gallery"
+        gallery.appendChild(figure);
+        // Intégrer l'image et le figcaption dans l'élément parent "figure"
+        figure.appendChild(img);
+        figure.appendChild(figcaption);
+    });
 }
 
 // Créer une boucle pour afficher les boutons "catégories" via l'API
 // Au clic, il faut afficher les travaux qui ont le même id que le bouton sélectionné
 
 function btnFiltres(categoryData) {
-  const filters = document.querySelector(".filters");
-// Créer le bouton "Tous"
-  const allButton = document.createElement("button");
-  allButton.textContent = "Tous";
+    const filters = document.querySelector(".filters");
+    // Créer le bouton "Tous"
+    const allButton = document.createElement("button");
+    allButton.textContent = "Tous";
 
-  allButton.addEventListener("click", () => {
-   showWork(workData);
-  });
-  filters.appendChild(allButton);
+    allButton.addEventListener("click", () => {
+    showWork(workData);
+    });
+    filters.appendChild(allButton);
 
-  //categorieData = données de l'API
-  categoryData.forEach((category) => {
-    const button = document.createElement("button");
-    button.textContent = category.name;
-    button.setAttribute("data-category", category.id);
-    button.addEventListener("click", () => {
-      const filteredWorks = workData.filter((work) => work.categoryId === category.id);
-      showWork(filteredWorks);
-      
+    //categorieData = données de l'API
+    categoryData.forEach((category) => {
+        const button = document.createElement("button");
+        button.textContent = category.name;
+        button.setAttribute("data-category", category.id);
+        button.addEventListener("click", () => {
+        const filteredWorks = workData.filter((work) => work.categoryId === category.id);
+        showWork(filteredWorks);
+        
+        });
+        
+        filters.appendChild(button);
+    });
+}
+
+// Conditions token
+const log = document.querySelector('.log li');
+
+if(localStorage.getItem('token')){
+    // Mode connecté - bouton logout
+    const btnLogout = document.createElement('button');
+    btnLogout.classList.add("logout"); // ← Correction ici
+    btnLogout.innerText = "logout";
+
+    // Événement de déconnexion
+    btnLogout.addEventListener('click', function() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        window.location.href = "index.html"; // Redirection
     });
 
-    filters.appendChild(button);
-  });
+    log.appendChild(btnLogout);
+} else {
+    // Mode déconnecté - lien login
+    const btnLogin = document.createElement('a');
+    btnLogin.href = "formulaire.html";
+    btnLogin.innerText = "login";
+    btnLogin.classList.add("login-link"); // Optionnel
+
+    log.appendChild(btnLogin);
 }
+
+function toggleFilters() {
+    const token = localStorage.getItem('token');
+    const filters = document.querySelector('.filters');
+    
+    if (filters) {
+        if (token) {
+            // Connecté - cacher les filtres
+            filters.style.display = 'none';
+        } else {
+            // Déconnecté - montrer les filtres
+            filters.style.display = 'flex';
+        }
+    }
+}
+
+toggleFilters();
 
 // Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', function() {
