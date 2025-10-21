@@ -21,9 +21,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<div class="log">
-				<li></li>
-			</div>
+			<li><a href="./formulaire.html">logout</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -41,57 +39,29 @@ crossorigin="anonymous" referrerpolicy="no-referrer" />
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets </h2>
-		<div class="filters"></div>
-		<div class="gallery">
-		</div>
+		<h2>Mes Projets <button id="editProjectsBtn" class="edit-btn">
+    <i class="fas fa-edit"></i>
+    modifier
+</button></h2>
+		<div class="gallery"></div>
+
+
+<!-- Modale -->
 <div id="galleryModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3>Galerie photo</h3>
-        
-        <div id="modalGallery" class="modal-gallery">
+        <div class="modal-header">
+            <h2 class="modal-title">Galerie photo</h2>
+            <span class="close-modal">&times;</span>
         </div>
-        <div class="modal-actions">
-            <button id="addPhotoBtn" class="btn-primary">Ajouter une photo</button>
+        <div class="modal-body">
+            <div class="gallery-grid" id="modalGallery">
+            </div>
+            <div class="modal-separator"></div>
+            <button id="addPhotoBtn" class="btn-add-photo">Ajouter une photo</button>
         </div>
     </div>
 </div>
- <div id="addPhotoModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-add-photo-modal">&times;</span>
-            <h3>Ajout photo</h3>
-            
-            <form id="addPhotoForm" class="add-photo-form">
-                <div class="upload-area" id="uploadArea">
-                    <i class="fas fa-image"></i>
-                    <input type="file" id="photoUpload" accept="image/*" style="display: none;">
-                    <button type="button" id="uploadBtn" class="btn-upload">+ Ajouter photo</button>
-                    <p>jpg, png : 4mo max</p>
-                </div>
                 
-                <div class="form-group">
-                    <label for="photoTitle">Titre</label>
-                    <input type="text" id="photoTitle" name="title" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="photoCategory">Catégorie</label>
-                    <select id="photoCategory" name="category" required>
-                        <option value="">Sélectionnez une catégorie</option>
-                        <option value="1">Objets</option>
-                        <option value="2">Appartements</option>
-                        <option value="3">Hotels & restaurants</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" id="validatePhotoBtn" class="btn-primary" disabled>Valider</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 	</section>
 	<section id="contact">
 		<h2>Contact</h2>
