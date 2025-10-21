@@ -17,6 +17,30 @@ function showWork(workData) {
     });
 }
 
+// Afficher la barre admin si connecté
+function initAdminBar() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        // Créer la barre admin si elle n'existe pas
+        if (!document.getElementById('adminBar')) {
+            document.body.insertAdjacentHTML('afterbegin', adminBarHTML);
+            document.body.classList.add('admin-mode');
+        } else {
+            // Afficher la barre existante
+            const adminBar = document.getElementById('adminBar');
+            adminBar.style.display = 'block';
+            document.body.classList.add('admin-mode');
+        }
+    } else {
+        // Cacher la barre si déconnecté
+        const adminBar = document.getElementById('adminBar');
+        if (adminBar) {
+            adminBar.style.display = 'none';
+            document.body.classList.remove('admin-mode');
+        }
+    }
+}
+
 // Créer une boucle pour afficher les boutons "catégories" via l'API
 function btnFiltres(categoryData) {
     const filters = document.querySelector(".filters");
@@ -73,12 +97,7 @@ function resetAddPhotoForm() {
         
         const uploadArea = document.getElementById('uploadArea');
         if (uploadArea) {
-            uploadArea.innerHTML = `
-                <i class="fas fa-image"></i>
-                <input type="file" id="photoUpload" accept="image/*" style="display: none;">
-                <button type="button" id="uploadBtn" class="btn-upload">+ Ajouter photo</button>
-                <p>jpg, png : 4mo max</p>
-            `;
+         
             attachUploadEvents();
         }
     }
@@ -97,6 +116,12 @@ function attachUploadEvents() {
         photoUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                // Vérification de la taille (4Mo max)
+                if (file.size > 4 * 1024 * 1024) {
+                    alert('Le fichier est trop volumineux (4Mo maximum)');
+                    return;
+                }
+                
                 // Affichage de l'aperçu
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -127,6 +152,8 @@ function attachUploadEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    initAdminBar();
+
     // Conditions token
     const log = document.querySelector('.log li');
     if(localStorage.getItem('token')){
@@ -157,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     toggleFilters();
 
+    // MODALE - seulement si connecté
     const token = localStorage.getItem('token');
     if (!token) {
         return;
@@ -221,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Charger les images depuis l'API
     async function loadGalleryImages() {
         try {
             console.log("Chargement des images API...");
@@ -259,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // formulaire d'ajout de photo
+    // Gestion du formulaire d'ajout de photo
     const addPhotoForm = document.getElementById('addPhotoForm');
     if (addPhotoForm) {
         addPhotoForm.addEventListener('submit', function(e) {
@@ -274,9 +303,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-           
+            // Ici vous ajouterez l'appel API pour envoyer les données
+            console.log('Données à envoyer:', {
+                image: imageFile,
+                title: title,
+                category: category
+            });
+            
+            // Simulation d'envoi réussi
+            alert('Photo ajoutée avec succès!');
             closeAddPhotoModal();
-            openModal();
+            openModal(); 
         });
     }
     
@@ -299,7 +336,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeAddPhotoModalBtn) {
         closeAddPhotoModalBtn.addEventListener('click', closeAddPhotoModal);
     }
-
+    
+    if (addPhotoModal) {
+        addPhotoModal.addEventListener('click', function(event) {
+            if (event.target === addPhotoModal) {
+                closeAddPhotoModal();
+            }
+        });
+    }
     attachUploadEvents();
 
 }); 
