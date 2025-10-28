@@ -21,12 +21,10 @@ function showWork(workData) {
 function initAdminBar() {
     const token = localStorage.getItem('token');
     if (token) {
-        // Créer la barre admin si elle n'existe pas
         if (!document.getElementById('adminBar')) {
             document.body.insertAdjacentHTML('afterbegin', adminBarHTML);
             document.body.classList.add('admin-mode');
         } else {
-            // Afficher la barre existante
             const adminBar = document.getElementById('adminBar');
             adminBar.style.display = 'block';
             document.body.classList.add('admin-mode');
@@ -66,8 +64,10 @@ function btnFiltres(categoryData) {
 
 // Variables globales pour les modales
 let addPhotoModal, closeAddPhotoModalBtn;
+let workData = [];
+let categoryData = [];
 
-// Fonctions pour la seconde modale
+// Seconde modale
 function openAddPhotoModal() {
     if (addPhotoModal) {
         addPhotoModal.style.display = 'block';
@@ -116,13 +116,12 @@ function attachUploadEvents() {
         photoUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                // Vérification de la taille (4Mo max)
                 if (file.size > 4 * 1024 * 1024) {
                     alert('Le fichier est trop volumineux (4Mo maximum)');
                     return;
                 }
                 
-                // Affichage de l'aperçu
+                // Aperçu
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const uploadArea = document.getElementById('uploadArea');
@@ -140,13 +139,17 @@ function attachUploadEvents() {
                                 photoUpload.click();
                             });
                         }
-                        
-                        // Activation du bouton Valider
+
+                        // Bouton Valider
                         validatePhotoBtn.disabled = false;
                     }
                 };
                 reader.readAsDataURL(file);
             }
+            const validatePhotoBtn = document.getElementById('validatePhotoBtn');
+    if (validatePhotoBtn) {
+        validatePhotoBtn.disabled = true;
+    }
         });
     }
 }
@@ -154,7 +157,7 @@ function attachUploadEvents() {
 document.addEventListener('DOMContentLoaded', function() {
     initAdminBar();
 
-    // Conditions token
+    // Token
     const log = document.querySelector('.log li');
     if(localStorage.getItem('token')){
         const btnLogout = document.createElement('button');
@@ -184,15 +187,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     toggleFilters();
 
-    // MODALE - seulement si connecté
+    // MODALE si connecté
     const token = localStorage.getItem('token');
     if (!token) {
         return;
     }
 
     console.log("Mode admin activé - initialisation modale...");
-    
-    // Créer le bouton "modifier"
+
+    // Bouton "modifier"
     const portfolioSection = document.getElementById('portfolio');
     if (portfolioSection && !document.getElementById('editProjectsBtn')) {
         const editButton = document.createElement('button');
@@ -218,14 +221,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Sélection des éléments modales
     const editProjectsBtn = document.getElementById('editProjectsBtn');
     const galleryModal = document.getElementById('galleryModal');
     const closeModal = document.querySelector('.close-modal');
     const addPhotoBtn = document.getElementById('addPhotoBtn');
     const modalGallery = document.getElementById('modalGallery');
     
-    // Sélection des éléments de la seconde modale
     addPhotoModal = document.getElementById('addPhotoModal');
     closeAddPhotoModalBtn = document.querySelector('.close-add-photo-modal');
 
@@ -241,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Fonction pour fermer la modale galerie
+    // Fermer la modale galerie
     function closeGalleryModal() {
         if (galleryModal) {
             galleryModal.style.display = 'none';
@@ -287,35 +288,63 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    // Formulaire d'ajout de photo
+   async function submitNewWork(title, categoryId, imageFile) {
+    const token = localStorage.getItem('token');
     
-    // Gestion du formulaire d'ajout de photo
-    const addPhotoForm = document.getElementById('addPhotoForm');
-    if (addPhotoForm) {
-        addPhotoForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const imageFile = document.getElementById('photoUpload').files[0];
-            const title = document.getElementById('photoTitle').value;
-            const category = document.getElementById('photoCategory').value;
-            
-            if (!imageFile || !title || !category) {
-                alert('Veuillez remplir tous les champs');
-                return;
-            }
-            
-            // Ici vous ajouterez l'appel API pour envoyer les données
-            console.log('Données à envoyer:', {
-                image: imageFile,
-                title: title,
-                category: category
-            });
-            
-            // Simulation d'envoi réussi
-            alert('Photo ajoutée avec succès!');
-            closeAddPhotoModal();
-            openModal(); 
-        });
+    if (!token) {
+        alert('Vous devez être connecté pour ajouter un travail');
+        return false;
     }
+
+    // Créer FormData pour l'envoi
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    formData.append('title', title);
+    formData.append('category', categoryId);
+
+    try {
+        const response = await fetch('http://localhost:5678/api/works', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            const newWork = await response.json();
+            
+            await refreshAllData();
+            
+            return true;
+        } else {
+            const error = await response.text();
+            console.error('Erreur API:', error);
+            return false;
+        }
+    } catch (error) {
+        alert('Erreur de connexion au serveur');
+        return false;
+    }
+}
+
+async function refreshAllData() {
+    try {
+        console.log("Rafraîchissement des données...");
+        
+        // Rafraîchir les works
+        const worksResponse = await fetch("http://localhost:5678/api/works");
+        if (worksResponse.ok) {
+            workData = await worksResponse.json();
+            showWork(workData);
+        };
+        
+    } catch (error) {
+        console.error('Erreur rafraîchissement:', error);
+    }
+}
     
     // ÉVÉNEMENTS
     if (editProjectsBtn) {
