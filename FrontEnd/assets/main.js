@@ -61,7 +61,7 @@ function initAdminBar() {
   }
 }
 
-// Créer une boucle pour afficher les boutons "catégories" via l'API
+// boutons "catégories" via l'API
 function btnFiltres(categoryData) {
   const filters = document.querySelector(".filters");
   const allButton = document.createElement("button");
@@ -88,8 +88,9 @@ function btnFiltres(categoryData) {
 let addPhotoModal, closeAddPhotoModalBtn;
 let workData = [];
 let categoryData = [];
+let currentFile = null;
 
-// Ouvrir la modale galerie
+// modale galerie
 function openGalleryModal() {
   const galleryModal = document.getElementById("galleryModal");
   if (galleryModal) {
@@ -103,7 +104,7 @@ function openGalleryModal() {
 
 async function loadGalleryImages() {
   try {
-     const timestamp = new Date().getTime();
+    const timestamp = new Date().getTime();
     const response = await fetch(`http://localhost:5678/api/works?t=${timestamp}`);
 
     if (!response.ok) throw new Error("API non disponible");
@@ -134,7 +135,6 @@ async function loadGalleryImages() {
   }
 }
 
-// ÉVÉNEMENTS DE SUPPRESSION
 function addDeleteEvents() {
   const deleteIcons = document.querySelectorAll(".delete-icon");
   deleteIcons.forEach((icon) => {
@@ -147,7 +147,6 @@ function addDeleteEvents() {
   });
 }
 
-// FONCTION POUR SUPPRIMER UN TRAVAIL
 async function deleteWork(workId) {
   const token = localStorage.getItem("token");
 
@@ -199,88 +198,124 @@ function openAddPhotoModal() {
 function closeAddPhotoModal() {
   if (addPhotoModal) {
     addPhotoModal.style.display = "none";
-    resetAddPhotoForm();
+    // S'assurer que le formulaire est réinitialisé
+    setTimeout(() => {
+      resetAddPhotoForm();
+    }, 100);
   }
 }
 
 function resetAddPhotoForm() {
-    const addPhotoForm = document.getElementById('addPhotoForm');
-    const validatePhotoBtn = document.getElementById('validatePhotoBtn');
+  const addPhotoForm = document.getElementById("addPhotoForm");
+  const validatePhotoBtn = document.getElementById("validatePhotoBtn");
+
+  if (addPhotoForm && validatePhotoBtn) {
+    // Réinitialiser le formulaire
+    addPhotoForm.reset();
+    validatePhotoBtn.disabled = true;
+    validatePhotoBtn.style.backgroundColor = "#A7A7A7";
     
-    if (addPhotoForm && validatePhotoBtn) {
-        addPhotoForm.reset();
-        validatePhotoBtn.disabled = true;
-        
-        // RÉINITIALISER COMPLÈTEMENT L'UPLOAD AREA
-        const uploadArea = document.getElementById('uploadArea');
-        if (uploadArea) {
-            uploadArea.innerHTML = `
-                <i class="fas fa-image"></i>
-                <input type="file" id="photoUpload" accept="image/*" style="display: none;">
-                <button type="button" id="uploadBtn" class="btn-upload">+ Ajouter photo</button>
-                <p>jpg, png : 4mo max</p>
-            `;
-            // Réattacher les événements
-            attachUploadEvents();
-        }
+    currentFile = null;
+
+    // l'upload area
+    const uploadArea = document.getElementById("uploadArea");
+    if (uploadArea) {
+      uploadArea.innerHTML = `
+        <i class="fas fa-image"></i>
+        <input type="file" id="photoUpload" accept="image/jpeg, image/png" style="display: none;">
+        <button type="button" id="uploadBtn" class="btn-upload">+ Ajouter photo</button>
+        <p>jpg, png : 4mo max</p>
+      `;
+      
+      setTimeout(() => {
+        attachUploadEvents();
+      }, 100);
     }
+  }
 }
 
-// Gestion de l'upload d'image
+// Gestion de l'upload
 function attachUploadEvents() {
   const uploadBtn = document.getElementById("uploadBtn");
   const photoUpload = document.getElementById("photoUpload");
+  const validatePhotoBtn = document.getElementById("validatePhotoBtn");
 
   if (uploadBtn && photoUpload) {
+    //S'assurer que l'input est vide au début
+    photoUpload.value = "";
+    
     uploadBtn.addEventListener("click", () => {
       photoUpload.click();
     });
 
     photoUpload.addEventListener("change", function (e) {
       const file = e.target.files[0];
-      if (file) {
-        if (file.size > 4 * 1024 * 1024) {
-          alert("Le fichier est trop volumineux (4Mo maximum)");
-          return;
+      
+      if (!file) {
+        // Désactiver le bouton si aucun fichier
+        if (validatePhotoBtn) {
+          validatePhotoBtn.disabled = true;
+          validatePhotoBtn.style.backgroundColor = "#A7A7A7";
         }
-
-        // Aperçu
-       const reader = new FileReader();
-                reader.onload = function(e) {
-                    const uploadArea = document.getElementById('uploadArea');
-                    const validatePhotoBtn = document.getElementById('validatePhotoBtn');
-                    
-                    if (uploadArea && validatePhotoBtn) {
-                        uploadArea.innerHTML = `
-                            <img src="${e.target.result}" class="preview-image" style="display: block;">
-                            <button type="button" id="changeImageBtn" class="btn-upload">Changer l'image</button>
-                        `;
-                        
-                        const changeImageBtn = document.getElementById('changeImageBtn');
-                        if (changeImageBtn) {
-                            changeImageBtn.addEventListener('click', () => {
-                                photoUpload.click();
-                            });
-                        }
-
-                        // Bouton Valider
-                        validatePhotoBtn.disabled = false;
-                    }
-                };
-                reader.readAsDataURL(file);
+        return;
       }
-      const validatePhotoBtn = document.getElementById("validatePhotoBtn");
-      if (validatePhotoBtn) {
-        validatePhotoBtn.disabled = true;
+
+      if (file.size > 4 * 1024 * 1024) {
+        alert("Le fichier est trop volumineux (4Mo maximum)");
+        photoUpload.value = "";
+        currentFile = null;
+        if (validatePhotoBtn) {
+          validatePhotoBtn.disabled = true;
+          validatePhotoBtn.style.backgroundColor = "#A7A7A7";
+        }
+        return;
       }
+
+      // Validation du type de fichier
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        alert("Seuls les fichiers JPG et PNG sont autorisés");
+        photoUpload.value = "";
+        currentFile = null;
+        if (validatePhotoBtn) {
+          validatePhotoBtn.disabled = true;
+          validatePhotoBtn.style.backgroundColor = "#A7A7A7";
+        }
+        return;
+      }
+
+      // Stocker le fichier actuel
+      currentFile = file;
+
+      // Aperçu
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const uploadArea = document.getElementById("uploadArea");
+
+        if (uploadArea && validatePhotoBtn) {
+          uploadArea.innerHTML = `
+            <img src="${e.target.result}" class="preview-image" style="max-width: 100%; max-height: 200px; object-fit: contain; display: block;">
+            <button type="button" id="changeImageBtn" class="btn-upload">Changer l'image</button>
+          `;
+
+          const changeImageBtn = document.getElementById("changeImageBtn");
+          if (changeImageBtn) {
+            changeImageBtn.addEventListener("click", () => {
+              resetAddPhotoForm();
+            });
+          }
+
+          // Bouton Valider
+          validatePhotoBtn.disabled = false;
+          validatePhotoBtn.style.backgroundColor = "#1D6154";
+        }
+      };
+      reader.readAsDataURL(file);
     });
   }
 }
 
 // Formulaire d'ajout de photo
 function initSubmitNewWork() {
-  const form = document.getElementById("addPhotoForm");
-  const inputImage = document.getElementById("photoUpload");
   const inputTitle = document.getElementById("photoTitle");
   const selectCategory = document.getElementById("photoCategory");
   const btnValider = document.getElementById("validatePhotoBtn");
@@ -289,61 +324,70 @@ function initSubmitNewWork() {
     return;
   }
 
-  btnValider.addEventListener("click", (e) => {
+  btnValider.addEventListener("click", async (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
     const token = localStorage.getItem("token");
 
     if (!token) {
       alert("Vous devez être connecté pour ajouter un travail");
-      return false;
+      window.location.href = "login.html";
+      return;
     }
 
-    // Vérifier que tous les champs sont remplis
-    if (!inputImage.files[0] || !inputTitle.value || !selectCategory.value) {
+    // NOUVEAU: Utiliser currentFile au lieu de inputImage.files[0]
+    if (!currentFile || !inputTitle.value || !selectCategory.value) {
       alert("Veuillez remplir tous les champs");
       return;
     }
 
     // Créer FormData pour l'envoi
     const formData = new FormData();
-    formData.append("image", inputImage.files[0]);
+    formData.append("image", currentFile);
     formData.append("title", inputTitle.value);
     formData.append("category", selectCategory.value);
 
     console.log("Envoi des données à l'API...");
 
-    fetch("http://localhost:5678/api/works", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
-      .then((response) => {
-        console.log("Réponse reçue:", response.status);
-        if (!response.ok) {
-          throw new Error("Erreur API: " + response.status);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Travail ajouté avec succès:", data);
-        closeAddPhotoModal();
-        refreshAllData();
-        
-        setTimeout(() => {
-    refreshAllData();
-  }, 300);
-})
-      })
-      .catch((error) => {
-        console.log("Erreur:", error);
-        alert("Erreur lors de l'ajout: " + error.message);
+    try {
+      const response = await fetch("http://localhost:5678/api/works", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
       });
 
-    e.stopPropagation();
-  };
+      console.log("Réponse reçue:", response.status);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          alert("Session expirée. Veuillez vous reconnecter.");
+          window.location.href = "login.html";
+          return;
+        }
+        throw new Error("Erreur API: " + response.status);
+      }
+
+      const data = await response.json();
+      console.log("Travail ajouté avec succès:", data);
+      
+      // Réinitialiser complètement le formulaire
+      resetAddPhotoForm();
+      closeAddPhotoModal();
+      
+      // Rafraîchir les données
+      await refreshAllData();
+
+    } catch (error) {
+      console.log("Erreur:", error);
+      alert("Erreur lors de l'ajout: " + error.message);
+    }
+  });
+}
 
 async function refreshAllData() {
   try {
@@ -359,10 +403,50 @@ async function refreshAllData() {
     if (galleryModal && galleryModal.style.display === "flex") {
       loadGalleryImages();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("Erreur rafraîchissement:", error);
+  }
+}
+
+//Charger les catégories pour les filtres
+async function loadCategoriesForFilters() {
+  try {
+    const response = await fetch("http://localhost:5678/api/categories");
+    if (response.ok) {
+      categoryData = await response.json();
+      btnFiltres(categoryData);
+    }
+  } catch (error) {
+    console.error("Erreur chargement catégories:", error);
+  }
+}
+
+// Vérifier la validité du token
+function checkTokenValidity() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      const expiration = tokenData.exp * 1000;
+      if (Date.now() >= expiration) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        console.log("Token expiré, déconnexion automatique");
+      }
+    } catch (error) {
+      console.error("Erreur vérification token:", error);
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  checkTokenValidity();
+  
+  // Initialiser d'abord les événements
+  attachUploadEvents();
+  initSubmitNewWork();
+  
+  // Puis charger les données
   loadWorks();
   initAdminBar();
 
@@ -419,7 +503,7 @@ document.addEventListener("DOMContentLoaded", function () {
     closeAddPhotoModalBtn: !!closeAddPhotoModalBtn,
   });
 
-  // Bouton "modifier" - CORRECTION
+  // Bouton "modifier" 
   const portfolioSection = document.getElementById("portfolio");
   if (portfolioSection) {
     // Créer le bouton avec ID
@@ -480,7 +564,4 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-
-  attachUploadEvents();
-  initSubmitNewWork();
 });
