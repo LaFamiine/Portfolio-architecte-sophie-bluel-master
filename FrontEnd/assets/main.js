@@ -65,6 +65,7 @@ function initAdminBar() {
 function btnFiltres(categoryData) {
   const filters = document.querySelector(".filters");
   const allButton = document.createElement("button");
+  filters.innerHTML = "";
   allButton.textContent = "Tous";
 
   allButton.addEventListener("click", () => {
